@@ -38,8 +38,9 @@ public class ApplicantUseCase {
         if (salary.compareTo(BigDecimal.ZERO) < 0 || salary.compareTo(new BigDecimal(MAX_SALARY)) > 0)
             return Mono.error(new DomainException(ErrorCode.INVALID_SALARY));
 
-        return applicantRepository.existsByEmail(applicant.getEmail().getValue())
-                .flatMap(exists -> exists
+        return applicantRepository
+                .existsByEmail(applicant.getEmail().getValue())
+                .flatMap(exists -> Boolean.TRUE.equals(exists)
                         ? Mono.error(new DomainException(ErrorCode.EXISTS_EMAIL))
                         : applicantRepository.save(applicant)
                 );
