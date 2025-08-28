@@ -31,9 +31,9 @@ public class RouterRest {
                     consumes = {MediaType.APPLICATION_JSON_VALUE},
                     method = RequestMethod.POST,
                     beanClass = Handler.class,
-                    beanMethod = "listenRegister",
+                    beanMethod = "register",
                     operation = @Operation(
-                            operationId = "listenRegister",
+                            operationId = "register",
                             summary = "Crear solicitante",
                             description = "Registra un nuevo solicitante en el sistema",
                             requestBody = @RequestBody(
