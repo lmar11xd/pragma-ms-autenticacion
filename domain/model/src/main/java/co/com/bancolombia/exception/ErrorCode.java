@@ -13,8 +13,10 @@ public enum ErrorCode {
     REQUERID_NAMES("VALIDATION_REQUERID_NAMES", "Nombres son obligatorios"),
     REQUERID_LASTNAMES("VALIDATION_REQUERID_LASTNAMES", "Apellidos son obligatorios"),
     REQUERID_DOCUMENTNUMBER("VALIDATION_REQUERID_DOCUMENTNUMBER", "Documento de identidad es obligatorio"),
+    EXISTS_DOCUMENTNUMBER("VALIDATION_EXISTS_DOCUMENTNUMBER", "Documento de identidad ya esta registrado"),
     REQUERID_APPLICANTID("VALIDATION_REQUERID_APPLICANTID", "Identificador del solicitante es requerido"),
     INVALID_SALARY("VALIDATION_INVALID_SALARY", "Salario base fuera de rango"),
+    APPLICANT_NOT_FOUND("APPLICANT_NOT_FOUND", "No se encontro un cliente con el numero de documento proporcionado"),
 
     // Genericos
     VALIDATION_ERROR("VALIDATION_ERROR", "Error de validacion"),
