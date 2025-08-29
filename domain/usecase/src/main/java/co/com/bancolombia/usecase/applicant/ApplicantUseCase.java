@@ -40,9 +40,28 @@ public class ApplicantUseCase {
 
         return applicantRepository
                 .existsByEmail(applicant.getEmail().getValue())
-                .flatMap(exists -> Boolean.TRUE.equals(exists)
-                        ? Mono.error(new DomainException(ErrorCode.EXISTS_EMAIL))
-                        : applicantRepository.save(applicant)
+                .flatMap(exists -> {
+                            if (Boolean.TRUE.equals(exists)) {
+                                return Mono.error(new DomainException(ErrorCode.EXISTS_EMAIL));
+                            }
+
+                            return applicantRepository.existsByDocumentNumber(applicant.getDocumentNumber())
+                                    .flatMap(docExists -> {
+                                        if (Boolean.TRUE.equals(docExists)) {
+                                            return Mono.error(new DomainException(ErrorCode.EXISTS_DOCUMENTNUMBER));
+                                        }
+                                        return applicantRepository.save(applicant);
+                                    });
+                        }
                 );
+    }
+
+    public Mono<Applicant> findByDocumentNumber(String documentNumber) {
+        if (documentNumber == null || documentNumber.isBlank()) {
+            return Mono.error(new DomainException(ErrorCode.REQUERID_DOCUMENTNUMBER));
+        }
+
+        return applicantRepository.findByDocumentNumber(documentNumber)
+                .switchIfEmpty(Mono.error(new DomainException(ErrorCode.APPLICANT_NOT_FOUND)));
     }
 }

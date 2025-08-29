@@ -2,6 +2,7 @@ package co.com.bancolombia.api.exception;
 
 import co.com.bancolombia.api.dto.ErrorResponse;
 import co.com.bancolombia.exception.DomainException;
+import co.com.bancolombia.exception.ErrorCode;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -47,8 +48,9 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
             status = HttpStatus.valueOf(rse.getStatusCode().value());
             message = rse.getReason();
         }
-        if(ex instanceof DomainException) {
-            details = ((DomainException) ex).getDetails();
+        if(ex instanceof DomainException domainException) {
+            details = domainException.getDetails();
+            status = getDomainStatus(domainException.getErrorCode());
         }
 
         ErrorResponse errorResponse = new ErrorResponse(
@@ -73,5 +75,17 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
         DataBufferFactory dbf = exchange.getResponse().bufferFactory();
         return exchange.getResponse().writeWith(Mono.just(dbf.wrap(bytes)));
+    }
+
+    private HttpStatus getDomainStatus(ErrorCode errorCode) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        if (errorCode == ErrorCode.APPLICANT_NOT_FOUND) {
+            status = HttpStatus.NOT_FOUND;
+        } else if (errorCode == ErrorCode.EXISTS_EMAIL || errorCode == ErrorCode.EXISTS_DOCUMENTNUMBER) {
+            status = HttpStatus.CONFLICT;
+        }
+
+        return status;
     }
 }

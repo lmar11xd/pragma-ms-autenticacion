@@ -41,4 +41,16 @@ public class Handler {
                 )
                 .doOnError(error -> log.error("Fallo en creacion del solicitante: {}", error.getMessage(), error));
     }
+
+    public Mono<ServerResponse> findByDocumentNumber(ServerRequest serverRequest) {
+        log.info("Solicitud GET={}", serverRequest.path());
+
+        String documentNumber = serverRequest.pathVariable("documentNumber");
+
+        return applicantUseCase.findByDocumentNumber(documentNumber)
+                .flatMap(applicant -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(ApplicantMapper.toDto(applicant))
+                );
+    }
 }
