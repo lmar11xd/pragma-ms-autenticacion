@@ -41,5 +41,5 @@ logging:
 
 security:
   jwt:
-    issuer: "auth-service"
-    secret: "change-this-in-prod-very-long-secret-key-256bits-aaaaaaaaaaaaaaaaaaaa" # debe coincidir con auth-service
+    secret: "kYf5mJvQx6jR1LWYiwvhP2Z5gTw4Xt4lUOpd4XyD5rk=" # debe coincidir con auth-service
+    expiration: 3600 # 1h en s

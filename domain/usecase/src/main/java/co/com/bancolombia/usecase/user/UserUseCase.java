@@ -28,8 +28,8 @@ public class UserUseCase {
             return Mono.error(new DomainException(ErrorCode.REQUERID_APPLICANTID));
 
         // ¿Se debe encriptar la contraseña?
-        // String passwordHashed = passwordEncoder.encode(user.getPasswordHash());
-        // user.setPasswordHash(passwordHashed);
+        String passwordHashed = passwordEncoder.encode(user.getPasswordHash());
+        user.setPasswordHash(passwordHashed);
 
         return userRepository.save(user);
     }
