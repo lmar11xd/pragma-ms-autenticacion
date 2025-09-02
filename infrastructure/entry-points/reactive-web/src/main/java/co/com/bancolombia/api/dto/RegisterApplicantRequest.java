@@ -22,6 +22,8 @@ public record RegisterApplicantRequest(
         String phone,
         @Schema(description = "Correo electronico", example = "pedroj@example.com")
         @Email @NotBlank String email,
+        @Schema(description = "Contraseña", example = "123456")
+        @NotBlank String password,
         @Schema(description = "Salario base", example = "5000")
         @NotNull @DecimalMin("0") @DecimalMax("15000000") BigDecimal baseSalary,
         @Schema(description = "Rol asignado", example = "CUSTOMER")

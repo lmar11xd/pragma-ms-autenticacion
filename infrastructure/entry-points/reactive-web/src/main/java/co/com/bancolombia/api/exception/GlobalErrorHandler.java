@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
 
+import static co.com.bancolombia.api.util.Utils.toJson;
+
 @Component
 @Order(-2)
 public class GlobalErrorHandler implements ErrorWebExceptionHandler {
@@ -39,18 +41,22 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
 
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status;
         String message = ex.getMessage();
         Map<String, Object> details = Map.of();
 
-        if (ex instanceof IllegalStateException) status = HttpStatus.CONFLICT;
-        if (ex instanceof ResponseStatusException rse) {
-            status = HttpStatus.valueOf(rse.getStatusCode().value());
-            message = rse.getReason();
-        }
-        if(ex instanceof DomainException domainException) {
-            details = domainException.getDetails();
-            status = getDomainStatus(domainException.getErrorCode());
+        switch (ex) {
+            case IllegalStateException illegalStateException -> status = HttpStatus.CONFLICT;
+            case ResponseStatusException rse -> {
+                status = HttpStatus.valueOf(rse.getStatusCode().value());
+                message = rse.getReason();
+            }
+            case DomainException domainException -> {
+                details = domainException.getDetails();
+                status = getDomainStatus(domainException.getErrorCode());
+                message = domainException.getMessage();
+            }
+            default -> status = HttpStatus.BAD_REQUEST;
         }
 
         ErrorResponse errorResponse = new ErrorResponse(
@@ -62,14 +68,7 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
                 details
         );
 
-        byte[] bytes = ("{" +
-                "\"timestamp\":\"" + errorResponse.timestamp() + "\"," +
-                "\"status\":" + errorResponse.status() + "," +
-                "\"error\":\"" + errorResponse.error() + "\"," +
-                "\"message\":\"" + errorResponse.message() + "\"," +
-                "\"path\":\"" + errorResponse.path() + "\"," +
-                "\"details\":\"" + errorResponse.details() + "\"}")
-                .getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = toJson(errorResponse).getBytes(StandardCharsets.UTF_8);
 
         exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -84,6 +83,8 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
             status = HttpStatus.NOT_FOUND;
         } else if (errorCode == ErrorCode.EXISTS_EMAIL || errorCode == ErrorCode.EXISTS_DOCUMENTNUMBER) {
             status = HttpStatus.CONFLICT;
+        } else if(errorCode == ErrorCode.INVALID_CREDENTIALS) {
+            status = HttpStatus.UNAUTHORIZED;
         }
 
         return status;

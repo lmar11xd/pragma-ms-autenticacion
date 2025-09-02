@@ -1,5 +1,6 @@
 package co.com.bancolombia.api;
 
+import co.com.bancolombia.api.dto.LoginRequest;
 import co.com.bancolombia.api.dto.RegisterApplicantRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -77,10 +78,35 @@ public class RouterRest {
                                     @ApiResponse(responseCode = "400", description = "Parametro invalido")
                             }
                     )
-            )
+            ),
+            @RouterOperation(
+                    path = "/api/v1/login",
+                    produces = {MediaType.APPLICATION_JSON_VALUE},
+                    consumes = {MediaType.APPLICATION_JSON_VALUE},
+                    method = RequestMethod.POST,
+                    beanClass = Handler.class,
+                    beanMethod = "login",
+                    operation = @Operation(
+                            operationId = "login",
+                            summary = "Autenticar Usuario",
+                            description = "Registra un nuevo solicitante en el sistema",
+                            requestBody = @RequestBody(
+                                    required = true,
+                                    content = @Content(
+                                            schema = @Schema(implementation = LoginRequest.class)
+                                    )
+                            ),
+                            responses = {
+                                    @ApiResponse(responseCode = "201", description = "Usuario autenticado"),
+                                    @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+                                    @ApiResponse(responseCode = "409", description = "Correo o documento de identidad ya registrado")
+                            }
+                    )
+            ),
     })
     public RouterFunction<ServerResponse> routerFunction(Handler handler) {
         return route(POST("/api/v1/usuarios"), handler::register)
-                .andRoute(GET("/api/v1/usuarios/document/{documentNumber}"), handler::findByDocumentNumber);
+                .andRoute(GET("/api/v1/usuarios/document/{documentNumber}"), handler::findByDocumentNumber)
+                .andRoute(POST("/api/v1/login"), handler::login);
     }
 }
