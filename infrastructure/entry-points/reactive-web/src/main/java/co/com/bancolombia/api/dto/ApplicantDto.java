@@ -8,7 +8,7 @@ public record ApplicantDto(
         String names,
         String lastNames,
         String documentNumber,
-        LocalDate birthday,
+        LocalDate birthdate,
         String address,
         String phone,
         String email,

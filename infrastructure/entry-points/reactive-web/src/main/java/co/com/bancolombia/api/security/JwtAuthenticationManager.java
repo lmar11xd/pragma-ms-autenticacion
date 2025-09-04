@@ -34,7 +34,7 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
         return Mono.just(
                 new UsernamePasswordAuthenticationToken(
                         email,
-                        null,
+                        authToken,
                         authorities
                 )
         );
