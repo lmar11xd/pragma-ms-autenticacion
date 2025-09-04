@@ -1,60 +1,64 @@
 package co.com.bancolombia.api;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.mockito.Mockito;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
-@WebFluxTest
 class RouterRestTest {
 
-    @Autowired
     private WebTestClient webTestClient;
+    private Handler handler;
 
-    @Test
-    void testListenGETUseCase() {
-        webTestClient.get()
-                .uri("/api/usecase/path")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
+    @BeforeEach
+    void setUp() {
+        handler = Mockito.mock(Handler.class);
+
+        // Mock respuestas de los handlers
+        Mockito.when(handler.register(Mockito.any()))
+                .thenReturn(ServerResponse.created(null).build());
+        Mockito.when(handler.findByDocumentNumber(Mockito.any()))
+                .thenReturn(ServerResponse.ok().build());
+        Mockito.when(handler.login(Mockito.any()))
+                .thenReturn(ServerResponse.ok().build());
+
+        RouterRest routerRest = new RouterRest();
+        webTestClient = WebTestClient.bindToRouterFunction(routerRest.routerFunction(handler)).build();
     }
 
     @Test
-    void testListenGETOtherUseCase() {
-        webTestClient.get()
-                .uri("/api/otherusercase/path")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
-    }
-
-    @Test
-    void testListenPOSTUseCase() {
+    void shouldRouteToRegisterHandler() {
         webTestClient.post()
-                .uri("/api/usecase/otherpath")
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue("")
+                .uri("/api/v1/usuarios")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("{\"email\":\"test@test.com\",\"password\":\"1234\"}")
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
+                .expectStatus().isCreated();
+
+        Mockito.verify(handler).register(Mockito.any());
+    }
+
+    @Test
+    void shouldRouteToFindByDocumentHandler() {
+        webTestClient.get()
+                .uri("/api/v1/usuarios/document/12345678")
+                .exchange()
+                .expectStatus().isOk();
+
+        Mockito.verify(handler).findByDocumentNumber(Mockito.any());
+    }
+
+    @Test
+    void shouldRouteToLoginHandler() {
+        webTestClient.post()
+                .uri("/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("{\"email\":\"test@test.com\",\"password\":\"1234\"}")
+                .exchange()
+                .expectStatus().isOk();
+
+        Mockito.verify(handler).login(Mockito.any());
     }
 }
