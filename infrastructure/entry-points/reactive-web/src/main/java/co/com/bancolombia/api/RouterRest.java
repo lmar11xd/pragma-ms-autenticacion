@@ -39,7 +39,7 @@ public class RouterRest {
                     operation = @Operation(
                             operationId = "register",
                             summary = "Crear solicitante",
-                            description = "Registra un nuevo solicitante en el sistema",
+                            description = "Registra un nuevo solicitante en el sistema (ADMIN, ADVISER)",
                             requestBody = @RequestBody(
                                     required = true,
                                     content = @Content(
@@ -89,7 +89,7 @@ public class RouterRest {
                     operation = @Operation(
                             operationId = "login",
                             summary = "Autenticar Usuario",
-                            description = "Registra un nuevo solicitante en el sistema",
+                            description = "Autenticar usuario al sistema",
                             requestBody = @RequestBody(
                                     required = true,
                                     content = @Content(
