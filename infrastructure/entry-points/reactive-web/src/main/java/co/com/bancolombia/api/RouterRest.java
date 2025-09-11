@@ -1,6 +1,8 @@
 package co.com.bancolombia.api;
 
+import co.com.bancolombia.api.dto.ApplicantDto;
 import co.com.bancolombia.api.dto.LoginRequest;
+import co.com.bancolombia.api.dto.LoginResponse;
 import co.com.bancolombia.api.dto.RegisterApplicantRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,9 +49,16 @@ public class RouterRest {
                                     )
                             ),
                             responses = {
-                                    @ApiResponse(responseCode = "201", description = "Solicitante creado"),
-                                    @ApiResponse(responseCode = "400", description = "Datos invalidos"),
-                                    @ApiResponse(responseCode = "409", description = "Correo o documento de identidad ya registrado")
+                                    @ApiResponse(
+                                            responseCode = "201",
+                                            description = "Solicitante creado",
+                                            content = @Content(
+                                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                                    schema = @Schema(implementation = ApplicantDto.class)
+                                            )
+                                    ),
+                                    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content),
+                                    @ApiResponse(responseCode = "409", description = "Correo o documento de identidad ya registrado", content = @Content)
                             }
                     )
             ),
@@ -73,9 +82,16 @@ public class RouterRest {
                                     )
                             },
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Solicitante encontrado"),
-                                    @ApiResponse(responseCode = "404", description = "No encontrado"),
-                                    @ApiResponse(responseCode = "400", description = "Parametro invalido")
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Solicitante encontrado",
+                                            content = @Content(
+                                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                                    schema = @Schema(implementation = ApplicantDto.class)
+                                            )
+                                    ),
+                                    @ApiResponse(responseCode = "404", description = "No encontrado", content = @Content),
+                                    @ApiResponse(responseCode = "400", description = "Parametro invalido", content = @Content)
                             }
                     )
             ),
@@ -97,9 +113,16 @@ public class RouterRest {
                                     )
                             ),
                             responses = {
-                                    @ApiResponse(responseCode = "201", description = "Usuario autenticado"),
-                                    @ApiResponse(responseCode = "400", description = "Datos invalidos"),
-                                    @ApiResponse(responseCode = "409", description = "Correo o documento de identidad ya registrado")
+                                    @ApiResponse(
+                                            responseCode = "201",
+                                            description = "Usuario autenticado",
+                                            content = @Content(
+                                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                                    schema = @Schema(implementation = LoginResponse.class)
+                                            )
+                                    ),
+                                    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content),
+                                    @ApiResponse(responseCode = "409", description = "Correo o documento de identidad ya registrado", content = @Content)
                             }
                     )
             ),

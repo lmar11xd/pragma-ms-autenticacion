@@ -10,7 +10,6 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class ReactiveValidator {
@@ -36,7 +35,7 @@ public class ReactiveValidator {
                         detail.put("code", err.getCode());
                         return detail;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
             return Mono.error(new DomainException(ErrorCode.VALIDATION_ERROR, Map.of("details", details)));
         }

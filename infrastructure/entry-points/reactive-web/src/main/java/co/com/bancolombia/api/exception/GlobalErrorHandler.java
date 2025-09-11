@@ -52,8 +52,8 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
                 message = rse.getReason();
             }
             case DomainException domainException -> {
-                details = domainException.getDetails();
                 status = getDomainStatus(domainException.getErrorCode());
+                details = domainException.getDetails();
                 message = domainException.getMessage();
             }
             default -> status = HttpStatus.BAD_REQUEST;
